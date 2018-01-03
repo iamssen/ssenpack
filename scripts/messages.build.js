@@ -52,6 +52,6 @@ module.exports = (options) => () => {
       }
     }
     
-    fs.writeFileSync(path.join(options.CWD, 'src', 'common', 'data', 'intl.messages.json'), JSON.stringify(messages, null, 2));
+    fs.writeFileSync(path.join(options.CWD, 'src', 'messages.json'), JSON.stringify(messages, null, 2));
   });
 };
