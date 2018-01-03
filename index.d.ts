@@ -69,7 +69,7 @@ declare module 'ssenpack' {
     alias(): object;
   }
   
-  const main: (options: Options) => {
+  const createSSenpack: (options: Options) => {
     web: Web;
     electron: Electron;
     libs: Libs;
@@ -77,5 +77,5 @@ declare module 'ssenpack' {
     editor: Editor;
   };
   
-  export = main;
+  export = createSSenpack;
 }

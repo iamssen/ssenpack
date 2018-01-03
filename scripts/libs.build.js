@@ -1,4 +1,3 @@
-const Webpack = require('./base/webpack');
 const fs = require('fs');
 const path = require('path');
 const glob = require('glob');
@@ -7,9 +6,7 @@ const rimraf = require('rimraf');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const nodeExternals = require('webpack-node-externals');
-const {CheckerPlugin} = require('awesome-typescript-loader');
 const webpack = require('webpack');
-const merge = require('webpack-merge');
 
 const buildDeclration = ({options, name, groupDir, file}) => new Promise((resolve, reject) => {
   const program = ts.createProgram([file], {

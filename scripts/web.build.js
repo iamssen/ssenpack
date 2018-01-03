@@ -4,10 +4,6 @@ const path = require('path');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const rimraf = require('rimraf');
-const nodeExternals = require('webpack-node-externals');
-const {CheckerPlugin} = require('awesome-typescript-loader');
 
 class Builder extends Webpack {
   constructor(options) {

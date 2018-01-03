@@ -1,47 +1,47 @@
 #!/usr/bin/env node
 const config = require(process.cwd() + '/config.json');
-const bundler = require('../index');
-const bundle = bundler(config);
+const createSSenpack = require('../index');
+const ssenpack = createSSenpack(config);
 
 switch (process.argv[2]) {
   case 'electron.dev.build':
-    bundle.electron.dev.build();
+    ssenpack.electron.dev.build();
     break;
   case 'electron.dev.build.watch':
-    bundle.electron.dev.build.watch();
+    ssenpack.electron.dev.build.watch();
     break;
   case 'libs.build':
-    bundle.libs.build();
+    ssenpack.libs.build();
     break;
   case 'libs.publish':
-    bundle.libs.publish();
+    ssenpack.libs.publish();
     break;
   case 'messages.build':
-    bundle.messages.build();
+    ssenpack.messages.build();
     break;
   case 'web.build':
-    bundle.web.build();
+    ssenpack.web.build();
     break;
   case 'web.dev.build':
-    bundle.web.dev.build();
+    ssenpack.web.dev.build();
     break;
   case 'web.dev.start':
-    bundle.web.dev.start();
+    ssenpack.web.dev.start();
     break;
   case 'web.dll.build':
-    bundle.web.dll.build();
+    ssenpack.web.dll.build();
     break;
   case 'web.server.build':
-    bundle.web.server.build();
+    ssenpack.web.server.build();
     break;
   case 'web.server.dev.build':
-    bundle.web.server.dev.build();
+    ssenpack.web.server.dev.build();
     break;
   case 'web.server.dev.build.watch':
-    bundle.web.server.dev.build.watch();
+    ssenpack.web.server.dev.build.watch();
     break;
   case 'web.server.dev.start':
-    bundle.web.server.dev.start();
+    ssenpack.web.server.dev.start();
     break;
   default:
     console.error('Unknown command', process.argv[2]);
