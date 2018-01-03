@@ -1,6 +1,6 @@
 {
   "name": "ssenpack",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "SSen's project helper pack",
   "main": "index.js",
   "scripts": {
@@ -17,7 +17,6 @@
     "compression": "^1.7.1",
     "copy-webpack-plugin": "^4.3.1",
     "css-loader": "^0.28.7",
-    "cssnext": "^1.8.4",
     "extract-text-webpack-plugin": "^3.0.2",
     "glob": "^7.1.2",
     "http-proxy-middleware": "^0.17.4",
@@ -27,6 +26,7 @@
     "package-json": "^4.0.1",
     "postcss-import": "^11.0.0",
     "postcss-loader": "^2.0.9",
+    "postcss-cssnext": "^3.0.2",
     "raw-loader": "^0.5.1",
     "rimraf": "^2.6.2",
     "sass-loader": "^6.0.6",
