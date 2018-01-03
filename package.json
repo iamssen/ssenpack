@@ -1,6 +1,6 @@
 {
   "name": "ssenpack",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "description": "SSen's project helper pack",
   "main": "index.js",
   "scripts": {
@@ -24,13 +24,14 @@
     "node-sass": "^4.7.2",
     "nodemon": "^1.14.7",
     "package-json": "^4.0.1",
+    "postcss-cssnext": "^3.0.2",
     "postcss-import": "^11.0.0",
     "postcss-loader": "^2.0.9",
-    "postcss-cssnext": "^3.0.2",
     "raw-loader": "^0.5.1",
     "rimraf": "^2.6.2",
     "sass-loader": "^6.0.6",
     "semver": "^5.4.1",
+    "source-map-support": "^0.5.0",
     "style-loader": "^0.19.1",
     "typescript": "^2.6.2",
     "webpack": "^3.10.0",
