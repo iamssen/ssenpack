@@ -7,6 +7,7 @@ const Webpack = require('./base/webpack');
 const path = require('path');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
+const fs = require('fs');
 
 class Builder extends Webpack {
   constructor(options) {
@@ -25,8 +26,12 @@ class Builder extends Webpack {
       
       entry: Object.keys(this.options.web.entry).reduce((obj, name) => {
         obj[name] = [
-          `${this.options.MODULE_HOME}/node_modules/webpack-hot-middleware/client?http://localhost:${this.options.web.port}`,
-          `${this.options.MODULE_HOME}/node_modules/webpack/hot/only-dev-server`,
+          fs.existsSync(`${this.options.CWD}/node_modules/webpack-hot-middleware`)
+            ? `${this.options.CWD}/node_modules/webpack-hot-middleware/client?http://localhost:${this.options.web.port}`
+            : `${this.options.MODULE_HOME}/node_modules/webpack-hot-middleware/client?http://localhost:${this.options.web.port}`,
+          fs.existsSync(`${this.options.CWD}/node_modules/webpack`)
+            ? `${this.options.CWD}/node_modules/webpack/hot/only-dev-server`
+            : `${this.options.MODULE_HOME}/node_modules/webpack/hot/only-dev-server`,
         ].concat(
           Array.isArray(this.options.web.entry[name])
             ? this.options.web.entry[name]
