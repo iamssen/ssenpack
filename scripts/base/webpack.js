@@ -111,8 +111,6 @@ module.exports = class {
                   options: {
                     sourceMap: true,
                     url: false,
-                    modules: true,
-                    localIdentName: '[name]__[local]___[hash:base64:5]',
                     importLoaders: 1,
                   },
                 },
@@ -138,8 +136,6 @@ module.exports = class {
                   options: {
                     sourceMap: true,
                     url: false,
-                    modules: true,
-                    localIdentName: '[name]__[local]___[hash:base64:5]',
                     importLoaders: 2,
                   },
                 },
