@@ -7,7 +7,15 @@ const {CheckerPlugin} = require('awesome-typescript-loader');
 module.exports = class {
   constructor(options) {
     this.options = options;
-    this.extractCSS = new ExtractTextPlugin({filename: '[name].css', allChunks: true});
+    this.extractCSS = {
+      default: new ExtractTextPlugin({filename: '[name].css', allChunks: true}),
+    };
+    
+    if (options.style && options.style.themes) {
+      Object.keys(options.style.themes).forEach(name => {
+        this.extractCSS[name] = new ExtractTextPlugin({filename: `[name].${name}.css`, allChunks: true});
+      });
+    }
   }
   
   build(config) {
@@ -61,8 +69,130 @@ module.exports = class {
   };
   
   get baseConfig() {
+    const cssOptions = (importLoaders) => ({
+      sourceMap: true,
+      url: false,
+      importLoaders,
+    });
+    
+    const cssModuleOptions = (importLoaders) => ({
+      sourceMap: true,
+      url: false,
+      modules: true,
+      localIdentName: '[name]__[local]___[hash:base64:5]',
+      importLoaders,
+    });
+    
     /** @type string */
     const src = path.join(this.options.CWD, 'src');
+    
+    const cssRules = [
+      {
+        test: file => {
+          return /\.css$/.test(file)
+            && Object.keys(this.options.style.themes).every(name => !new RegExp(`\.${name}\.css$`).test(file));
+        },
+        include: src,
+        use: this.extractCSS.default.extract({
+          fallback: 'style-loader',
+          use: [
+            {
+              loader: 'css-loader',
+              options: cssOptions(1),
+            },
+            {
+              loader: 'postcss-loader',
+              options: {
+                config: {
+                  path: path.join(__dirname, 'base', 'postcss.config.js'),
+                },
+              },
+            },
+          ],
+        }),
+      },
+      {
+        test: file => {
+          return /\.scss$/.test(file)
+            && Object.keys(this.options.style.themes).every(name => !new RegExp(`\.${name}\.scss$`).test(file));
+        },
+        include: src,
+        use: this.extractCSS.default.extract({
+          fallback: 'style-loader',
+          use: [
+            {
+              loader: 'css-loader',
+              options: cssOptions(2),
+            },
+            {
+              loader: 'postcss-loader',
+              options: {
+                config: {
+                  path: path.join(__dirname, 'base', 'postcss.config.js'),
+                },
+              },
+            },
+            {
+              loader: 'sass-loader',
+            },
+          ],
+        }),
+      },
+    ];
+    
+    
+    if (this.options.style && this.options.style.themes) {
+      Object.keys(this.options.style.themes).forEach(name => {
+        const theme = this.options.style.themes[name];
+        cssRules.push(
+          {
+            test: new RegExp(`\.${name}\.css$`),
+            include: src,
+            use: this.extractCSS[name].extract({
+              fallback: 'style-loader',
+              use: [
+                {
+                  loader: 'css-loader',
+                  options: theme.cssModule === true ? cssModuleOptions(1) : cssOptions(1),
+                },
+                {
+                  loader: 'postcss-loader',
+                  options: {
+                    config: {
+                      path: path.join(__dirname, 'base', 'postcss.config.js'),
+                    },
+                  },
+                },
+              ],
+            }),
+          },
+          {
+            test: new RegExp(`\.${name}\.scss$`),
+            include: src,
+            use: this.extractCSS[name].extract({
+              fallback: 'style-loader',
+              use: [
+                {
+                  loader: 'css-loader',
+                  options: theme.cssModule === true ? cssModuleOptions(2) : cssOptions(2),
+                },
+                {
+                  loader: 'postcss-loader',
+                  options: {
+                    config: {
+                      path: path.join(__dirname, 'base', 'postcss.config.js'),
+                    },
+                  },
+                },
+                {
+                  loader: 'sass-loader',
+                },
+              ],
+            }),
+          },
+        );
+      });
+    }
     
     return {
       target: 'web',
@@ -100,59 +230,7 @@ module.exports = class {
               {loader: 'awesome-typescript-loader'},
             ],
           },
-          {
-            test: /\.css$/,
-            include: src,
-            use: this.extractCSS.extract({
-              fallback: 'style-loader',
-              use: [
-                {
-                  loader: 'css-loader',
-                  options: {
-                    sourceMap: true,
-                    url: false,
-                    importLoaders: 1,
-                  },
-                },
-                {
-                  loader: 'postcss-loader',
-                  options: {
-                    config: {
-                      path: path.join(__dirname, 'base', 'postcss.config.js'),
-                    },
-                  },
-                },
-              ],
-            }),
-          },
-          {
-            test: /\.scss$/,
-            include: src,
-            use: this.extractCSS.extract({
-              fallback: 'style-loader',
-              use: [
-                {
-                  loader: 'css-loader',
-                  options: {
-                    sourceMap: true,
-                    url: false,
-                    importLoaders: 2,
-                  },
-                },
-                {
-                  loader: 'postcss-loader',
-                  options: {
-                    config: {
-                      path: path.join(__dirname, 'base', 'postcss.config.js'),
-                    },
-                  },
-                },
-                {
-                  loader: 'sass-loader',
-                },
-              ],
-            }),
-          },
+          ...cssRules,
           //{
           //  test: /\.js$/,
           //  enforce: 'pre',

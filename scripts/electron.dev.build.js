@@ -22,7 +22,7 @@ class Builder extends Webpack {
       },
       
       plugins: [
-        this.extractCSS,
+        ...Object.values(this.extractCSS),
         new CopyWebpackPlugin([
           ...this.options.web.static.map(dir => ({from: dir})),
         ]),

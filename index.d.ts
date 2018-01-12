@@ -2,6 +2,14 @@ import { MiddlewareHandler, PerRouteMiddleware } from 'browser-sync';
 
 declare module 'ssenpack' {
   export interface Options {
+    style?: {
+      themes?: {
+        [name: string]: {
+          cssModule?: boolean;
+        }
+      };
+    }
+    
     web: {
       entry: {[name: string]: string | string[]};
       dll: {[name: string]: string[]};

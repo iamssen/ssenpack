@@ -19,7 +19,7 @@ class Builder extends Webpack {
       entry: this.options.web.entry,
       
       plugins: [
-        this.extractCSS,
+        ...Object.values(this.extractCSS),
         //...Object.keys(web.dll).map(name => {
         //  return new webpack.DllReferencePlugin({
         //    context: '.',

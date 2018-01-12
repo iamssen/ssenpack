@@ -37,7 +37,7 @@ class Builder extends Webpack {
       }, {}),
       
       plugins: [
-        this.extractCSS,
+        ...Object.values(this.extractCSS),
         ...Object.keys(this.options.web.dll).map(name => {
           return new webpack.DllReferencePlugin({
             context: '.',

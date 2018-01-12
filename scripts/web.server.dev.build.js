@@ -23,7 +23,7 @@ class Builder extends Webpack {
       },
       
       plugins: [
-        this.extractCSS,
+        ...Object.values(this.extractCSS),
       ],
       
       externals: [nodeExternals()],

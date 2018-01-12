@@ -1,6 +1,6 @@
 {
   "name": "ssenpack",
-  "version": "2018.1.1",
+  "version": "2018.1.2",
   "description": "SSen's project helper pack",
   "main": "index.js",
   "scripts": {

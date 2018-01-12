@@ -27,7 +27,7 @@ class Builder extends Webpack {
       
       plugins: [
         new webpack.optimize.ModuleConcatenationPlugin(),
-        this.extractCSS,
+        ...Object.values(this.extractCSS),
       ],
     });
   }

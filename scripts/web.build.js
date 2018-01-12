@@ -24,7 +24,7 @@ class Builder extends Webpack {
           chunks: Object.keys(this.options.web.entry),
         }),
         new webpack.optimize.ModuleConcatenationPlugin(),
-        this.extractCSS,
+        ...Object.values(this.extractCSS),
         new CopyWebpackPlugin([
           ...this.options.web.static.map(dir => ({from: dir})),
         ]),
