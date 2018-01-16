@@ -90,7 +90,11 @@ module.exports = class {
       {
         test: file => {
           return /\.css$/.test(file)
-            && Object.keys(this.options.style.themes).every(name => !new RegExp(`\.${name}\.css$`).test(file));
+            && (
+              !this.options.style
+              || !this.options.style.themes
+              || Object.keys(this.options.style.themes).every(name => !new RegExp(`\.${name}\.css$`).test(file))
+            );
         },
         include: src,
         use: this.extractCSS.default.extract({
@@ -114,7 +118,11 @@ module.exports = class {
       {
         test: file => {
           return /\.scss$/.test(file)
-            && Object.keys(this.options.style.themes).every(name => !new RegExp(`\.${name}\.scss$`).test(file));
+            && (
+              !this.options.style
+              || !this.options.style.themes
+              || Object.keys(this.options.style.themes).every(name => !new RegExp(`\.${name}\.scss$`).test(file))
+            );
         },
         include: src,
         use: this.extractCSS.default.extract({
