@@ -12,9 +12,13 @@ declare module 'ssenpack' {
     
     web: {
       entry: {[name: string]: string | string[]};
-      dll: {[name: string]: string[]};
+      dll: {
+        name: string;
+        entry: string[];
+      };
       externals: {[name: string]: string};
       static: string[];
+      sharedChunkName?: string;
       port: number;
     }
     

@@ -1,6 +1,8 @@
 const Webpack = require('./base/webpack');
 const path = require('path');
 const merge = require('webpack-merge');
+const webpack = require('webpack');
+const rimraf = require('rimraf');
 
 class Builder extends Webpack {
   constructor(options) {
@@ -26,6 +28,10 @@ class Builder extends Webpack {
         //    manifest: require(`./dist-dev/dll/monitoring/assets/${name}-manifest.json`),
         //  });
         //}),
+        new webpack.optimize.CommonsChunkPlugin({
+          name: this.options.web.sharedChunkName || 'shared',
+          chunks: Object.keys(this.options.web.entry),
+        }),
       ],
     });
   }
@@ -36,6 +42,10 @@ class Builder extends Webpack {
 }
 
 module.exports = (options) => () => {
-  const builder = new Builder(options);
-  builder.build();
+  rimraf(path.join(options.CWD, 'dist-dev', 'web'), err => {
+    if (err) throw err;
+    
+    const builder = new Builder(options);
+    builder.build();
+  });
 };

@@ -3,6 +3,7 @@ const path = require('path');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const nodeExternals = require('webpack-node-externals');
+const rimraf = require('rimraf');
 
 class Builder extends Webpack {
   constructor(options) {
@@ -38,6 +39,10 @@ class Builder extends Webpack {
 }
 
 module.exports = (options) => () => {
-  const builder = new Builder(options);
-  builder.build();
+  rimraf(path.join(options.CWD, 'dist', 'server'), err => {
+    if (err) throw err;
+    
+    const builder = new Builder(options);
+    builder.build();
+  });
 };

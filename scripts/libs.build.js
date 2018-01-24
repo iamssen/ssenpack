@@ -118,7 +118,11 @@ const build = ({options, name, groupDir, file, libExternals}) => new Promise((re
     {
       test: file => {
         return /\.css$/.test(file)
-          && Object.keys(options.style.themes).every(name => !new RegExp(`\.${name}\.css$`).test(file));
+          && (
+            !options.style
+            || !options.style.themes
+            || Object.keys(options.style.themes).every(name => !new RegExp(`\.${name}\.css$`).test(file))
+          );
       },
       include,
       use: extractCSS.default.extract({
@@ -142,7 +146,11 @@ const build = ({options, name, groupDir, file, libExternals}) => new Promise((re
     {
       test: file => {
         return /\.scss$/.test(file)
-          && Object.keys(options.style.themes).every(name => !new RegExp(`\.${name}\.scss$`).test(file));
+          && (
+            !options.style
+            || !options.style.themes
+            || Object.keys(options.style.themes).every(name => !new RegExp(`\.${name}\.scss$`).test(file))
+          );
       },
       include,
       use: extractCSS.default.extract({

@@ -4,6 +4,7 @@ const path = require('path');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const rimraf = require('rimraf');
 
 class Builder extends Webpack {
   constructor(options) {
@@ -20,7 +21,7 @@ class Builder extends Webpack {
       
       plugins: [
         new webpack.optimize.CommonsChunkPlugin({
-          name: 'shared',
+          name: this.options.web.sharedChunkName || 'shared',
           chunks: Object.keys(this.options.web.entry),
         }),
         new webpack.optimize.ModuleConcatenationPlugin(),
@@ -54,6 +55,10 @@ class Builder extends Webpack {
 }
 
 module.exports = (options) => () => {
-  const builder = new Builder(options);
-  builder.build();
+  rimraf(path.join(options.CWD, 'dist', 'web'), err => {
+    if (err) throw err;
+    
+    const builder = new Builder(options);
+    builder.build();
+  });
 };

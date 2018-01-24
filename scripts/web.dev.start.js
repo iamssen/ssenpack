@@ -8,6 +8,7 @@ const path = require('path');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const getModulePath = require('./base/getModulePath');
+const parseDllName = require('./base/parseDllName');
 
 class Builder extends Webpack {
   constructor(options) {
@@ -15,6 +16,8 @@ class Builder extends Webpack {
   }
   
   get webpackConfig() {
+    const dllInfo = parseDllName(this.options.web.dll.name);
+    
     return merge(this.baseConfig, {
       // devtool: 'cheap-module-source-map', // slow + update source map with hmr
       devtool: 'cheap-module-eval-source-map', // fast + no update source map with hmr
@@ -38,14 +41,18 @@ class Builder extends Webpack {
       
       plugins: [
         ...Object.values(this.extractCSS),
-        ...Object.keys(this.options.web.dll).map(name => {
-          return new webpack.DllReferencePlugin({
-            context: '.',
-            manifest: require(path.join(this.options.CWD, 'dist-dev', 'dll', `${name}-manifest.json`)),
-          });
+        new webpack.DllReferencePlugin({
+          context: '.',
+          manifest: require(path.join(this.options.CWD, 'dist-dev', 'dll', ...dllInfo.dirs, `${dllInfo.name}-manifest.json`)),
         }),
+        //...Object.keys(this.options.web.dll).map(name => {
+        //  return new webpack.DllReferencePlugin({
+        //    context: '.',
+        //    manifest: require(path.join(this.options.CWD, 'dist-dev', 'dll', `${name}-manifest.json`)),
+        //  });
+        //}),
         new webpack.optimize.CommonsChunkPlugin({
-          name: 'shared',
+          name: this.options.web.sharedChunkName || 'shared',
           chunks: Object.keys(this.options.web.entry),
         }),
         new webpack.HotModuleReplacementPlugin(),
