@@ -25,6 +25,9 @@ switch (process.argv[2]) {
   case 'web.dev.build':
     ssenpack.web.dev.build();
     break;
+  case 'web.dev.build.watch':
+    ssenpack.web.dev.build.watch();
+    break;
   case 'web.dev.start':
     ssenpack.web.dev.start();
     break;

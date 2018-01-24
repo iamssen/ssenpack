@@ -39,6 +39,7 @@ module.exports = (options) => {
     },
   };
   
+  instances.web.dev.build.watch = require('./scripts/web.dev.build.watch')(options);
   instances.web.server.dev.build.watch = require('./scripts/web.server.dev.build.watch')(options);
   instances.electron.dev.build.watch = require('./scripts/electron.dev.build.watch')(options);
   

@@ -39,6 +39,10 @@ class Builder extends Webpack {
   build() {
     super.build(this.webpackConfig);
   }
+  
+  watch() {
+    return super.watch(this.webpackConfig);
+  }
 }
 
 module.exports = (options) => () => {
@@ -49,3 +53,5 @@ module.exports = (options) => () => {
     builder.build();
   });
 };
+
+module.exports.Builder = Builder;

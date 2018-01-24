@@ -37,7 +37,10 @@ declare module 'ssenpack' {
     build(): void;
     
     dev: {
-      build(): void;
+      build: {
+        (): void;
+        watch(): void;
+      };
       start(): void;
     }
     
