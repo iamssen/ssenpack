@@ -18,7 +18,9 @@ declare module 'ssenpack' {
       };
       externals: {[name: string]: string};
       static: string[];
+      publicPath?: string;
       sharedChunkName?: string;
+      chunkFileDirectory?: string;
       port: number;
     }
     

@@ -202,15 +202,21 @@ module.exports = class {
       });
     }
     
+    const chunkFileDirectory = typeof this.options.web.chunkFileDirectory === 'string'
+      ? /\/$/.test(this.options.web.chunkFileDirectory)
+        ? this.options.web.chunkFileDirectory
+        : this.options.web.chunkFileDirectory + '/'
+      : '';
+    
     return {
       target: 'web',
       
       output: {
         path: this.options.CWD,
-        publicPath: '',
+        publicPath: this.options.web.publicPath || '',
         filename: '[name].js',
         sourceMapFilename: '[file].map',
-        chunkFilename: '[id].[chunkhash].chunk.js',
+        chunkFilename: chunkFileDirectory + '[id].[chunkhash].chunk.js',
       },
       
       plugins: [
