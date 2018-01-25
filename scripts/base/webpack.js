@@ -210,7 +210,7 @@ module.exports = class {
         publicPath: '',
         filename: '[name].js',
         sourceMapFilename: '[file].map',
-        chunkFilename: '[id].chunk.js',
+        chunkFilename: '[id].[chunkhash].chunk.js',
       },
       
       plugins: [
