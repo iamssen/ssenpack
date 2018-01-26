@@ -289,7 +289,7 @@ module.exports = (options) => () => {
     const buildOptions = Object.keys(options.libs.entry).map(name => {
       const {group} = options.libs.entry[name];
       const groupDir = group ? group + '/' : '';
-      const indexFile = fs.existsSync(path.join(options.CWD, 'src', '_library', groupDir + name + 'index.tsx'))
+      const indexFile = fs.existsSync(path.join(options.CWD, 'src', '_library', groupDir + name, 'index.tsx'))
         ? 'index.tsx'
         : 'index.ts';
       const file = path.join(options.CWD, 'src', '_library', groupDir + name, indexFile);
