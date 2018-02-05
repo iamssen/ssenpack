@@ -1,47 +1,48 @@
 module.exports = (options) => {
-  options = Object.assign({
+  options = {
+    ...options,
     CWD: process.cwd(),
     MODULE_HOME: __dirname,
-  }, options);
+  };
   
   const instances = {
     web: {
-      build: require('./scripts/web.build')(options),
+      build: require('./scripts/web.build')({...options, command: 'web.build'}),
       dev: {
-        build: require('./scripts/web.dev.build')(options),
-        start: require('./scripts/web.dev.start')(options),
+        build: require('./scripts/web.dev.build')({...options, command: 'web.dev.build'}),
+        start: require('./scripts/web.dev.start')({...options, command: 'web.dev.start'}),
       },
       server: {
-        build: require('./scripts/web.server.build')(options),
+        build: require('./scripts/web.server.build')({...options, command: 'web.server.build'}),
         dev: {
-          build: require('./scripts/web.server.dev.build')(options),
-          start: require('./scripts/web.server.dev.start')(options),
+          build: require('./scripts/web.server.dev.build')({...options, command: 'web.server.dev.build'}),
+          start: require('./scripts/web.server.dev.start')({...options, command: 'web.server.dev.start'}),
         },
       },
       dll: {
-        build: require('./scripts/web.dll.build')(options),
+        build: require('./scripts/web.dll.build')({...options, command: 'web.dll.build'}),
       },
     },
     electron: {
       dev: {
-        build: require('./scripts/electron.dev.build')(options),
+        build: require('./scripts/electron.dev.build')({...options, command: 'electron.dev.build'}),
       },
     },
     libs: {
-      build: require('./scripts/libs.build')(options),
-      publish: require('./scripts/libs.publish')(options),
+      build: require('./scripts/libs.build')({...options, command: 'libs.build'}),
+      publish: require('./scripts/libs.publish')({...options, command: 'libs.publish'}),
     },
     messages: {
-      build: require('./scripts/messages.build')(options),
+      build: require('./scripts/messages.build')({...options, command: 'messages.build'}),
     },
     editor: {
-      alias: require('./scripts/editor.alias')(options),
+      alias: require('./scripts/editor.alias')({...options, command: 'editor.alias'}),
     },
   };
   
-  instances.web.dev.build.watch = require('./scripts/web.dev.build.watch')(options);
-  instances.web.server.dev.build.watch = require('./scripts/web.server.dev.build.watch')(options);
-  instances.electron.dev.build.watch = require('./scripts/electron.dev.build.watch')(options);
+  instances.web.dev.build.watch = require('./scripts/web.dev.build.watch')({...options, command: 'web.dev.build.watch'});
+  instances.web.server.dev.build.watch = require('./scripts/web.server.dev.build.watch')({...options, command: 'web.server.dev.build.watch'});
+  instances.electron.dev.build.watch = require('./scripts/electron.dev.build.watch')({...options, command: 'electron.dev.build.watch'});
   
   return instances;
 };

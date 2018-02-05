@@ -7,6 +7,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const nodeExternals = require('webpack-node-externals');
 const webpack = require('webpack');
+const finalizeWebpackConfig = require('./base/finalizeWebpackConfig');
 
 const buildDeclration = ({options, name, groupDir, file}) => new Promise((resolve, reject) => {
   const program = ts.createProgram([file], {
@@ -266,7 +267,7 @@ const build = ({options, name, groupDir, file, libExternals}) => new Promise((re
     plugins,
   };
   
-  return webpack(webpackConfig).run((err, stats) => {
+  return webpack(finalizeWebpackConfig(options, webpackConfig)).run((err, stats) => {
     if (err) {
       console.error(err);
       reject(err);

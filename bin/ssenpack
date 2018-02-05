@@ -1,7 +1,10 @@
 #!/usr/bin/env node
-const config = require(process.cwd() + '/config.json');
+const fs = require('fs');
+const options = fs.existsSync(process.cwd() + '/config.js')
+  ? require(process.cwd() + '/config.js')
+  : require(process.cwd() + '/config.json');
 const createSSenpack = require('../index');
-const ssenpack = createSSenpack(config);
+const ssenpack = createSSenpack(options);
 
 switch (process.argv[2]) {
   case 'electron.dev.build':

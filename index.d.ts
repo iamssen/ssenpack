@@ -33,6 +33,8 @@ declare module 'ssenpack' {
     libs?: {
       entry: {[name: string]: {group?: string}}
     }
+    
+    webpackConfig?: (command: string, config: object) => object;
   }
   
   export interface Web {

@@ -9,6 +9,7 @@ const webpack = require('webpack');
 const merge = require('webpack-merge');
 const getModulePath = require('./base/getModulePath');
 const parseDllName = require('./base/parseDllName');
+const finalizeWebpackConfig = require('./base/finalizeWebpackConfig');
 
 class Builder extends Webpack {
   constructor(options) {
@@ -63,7 +64,7 @@ class Builder extends Webpack {
   }
   
   get browserSyncConfig() {
-    const bundler = webpack(this.webpackConfig);
+    const bundler = webpack(finalizeWebpackConfig(this.options, this.webpackConfig));
     
     const middleware = [
       webpackDevMiddleware(bundler, {

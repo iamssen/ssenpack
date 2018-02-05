@@ -3,6 +3,7 @@ const path = require('path');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const {CheckerPlugin} = require('awesome-typescript-loader');
+const finalizeWebpackConfig = require('./finalizeWebpackConfig');
 
 module.exports = class {
   constructor(options) {
@@ -19,7 +20,7 @@ module.exports = class {
   }
   
   build(config) {
-    webpack(config).run((err, stats) => {
+    webpack(finalizeWebpackConfig(this.options, config)).run((err, stats) => {
       if (err) {
         console.error(err);
       } else {
@@ -32,7 +33,7 @@ module.exports = class {
   }
   
   watch(config) {
-    return webpack(config).watch({}, (err, stats) => {
+    return webpack(finalizeWebpackConfig(this.options, config)).watch({}, (err, stats) => {
       if (err) {
         console.error(err);
       } else {
