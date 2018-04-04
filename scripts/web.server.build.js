@@ -4,6 +4,7 @@ const webpack = require('webpack');
 const merge = require('webpack-merge');
 const nodeExternals = require('webpack-node-externals');
 const rimraf = require('rimraf');
+const fs = require('fs');
 
 class Builder extends Webpack {
   constructor(options) {
@@ -34,7 +35,10 @@ class Builder extends Webpack {
   }
   
   build() {
-    super.build(this.webpackConfig);
+    super.build(this.webpackConfig, () => {
+      const json = fs.readFileSync(path.join(this.options.CWD, 'package.json'), {encoding: 'utf8'});
+      fs.writeFileSync(path.join(this.options.CWD, 'dist', 'server', 'package.json'), json);
+    });
   }
 }
 

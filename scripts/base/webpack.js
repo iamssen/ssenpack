@@ -19,7 +19,7 @@ module.exports = class {
     }
   }
   
-  build(config) {
+  build(config, callback) {
     webpack(finalizeWebpackConfig(this.options, config)).run((err, stats) => {
       if (err) {
         console.error(err);
@@ -28,6 +28,8 @@ module.exports = class {
           chunks: true,
           colors: true,
         }));
+        
+        if (typeof callback === 'function') callback();
       }
     });
   }
