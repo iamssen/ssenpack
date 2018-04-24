@@ -91,6 +91,7 @@ class Builder extends Webpack {
       port: this.options.web.port,
       open: false,
       ghostMode: false,
+      https: this.options.web.https || false,
       
       server: {
         baseDir: [

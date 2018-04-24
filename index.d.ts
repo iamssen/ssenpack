@@ -22,6 +22,7 @@ declare module 'ssenpack' {
       sharedChunkName?: string;
       chunkFileDirectory?: string;
       port: number;
+      https?: boolean | {key: string, cert: string};
     }
     
     server?: {
