@@ -1,10 +1,10 @@
 const Webpack = require('./base/webpack');
-const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const rimraf = require('rimraf');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 class Builder extends Webpack {
   constructor(options) {
@@ -12,37 +12,39 @@ class Builder extends Webpack {
   }
   
   get webpackConfig() {
-    return merge(this.baseConfig, {
+    return merge(this.getConfig({mode: 'production', extractCSS: true}), {
       output: {
-        path: path.join(process.cwd(), 'dist', 'web'),
+        path: path.join(this.options.CWD, 'dist', 'web'),
       },
       
       entry: this.options.web.entry,
       
+      optimization: {
+        concatenateModules: true,
+        minimize: true,
+        minimizer: [
+          new UglifyJsPlugin({
+            uglifyOptions: {
+              output: {
+                comments: false,
+              },
+              compress: {
+                warnings: false,
+                drop_debugger: true,
+                drop_console: true,
+              },
+            },
+          }),
+        ],
+      },
+      
       plugins: [
-        new webpack.optimize.CommonsChunkPlugin({
-          name: this.options.web.sharedChunkName || 'shared',
-          chunks: Object.keys(this.options.web.entry),
-        }),
-        new webpack.optimize.ModuleConcatenationPlugin(),
-        ...Object.values(this.extractCSS),
         new CopyWebpackPlugin([
           ...this.options.web.static.map(dir => ({from: dir})),
         ]),
         new webpack.DefinePlugin({
           'process.env': {
             NODE_ENV: JSON.stringify('production'),
-          },
-        }),
-        new webpack.optimize.UglifyJsPlugin({
-          output: {
-            comments: false,
-          },
-          compress: {
-            warnings: false,
-            screw_ie8: true,
-            drop_debugger: true,
-            drop_console: true,
           },
         }),
       ],

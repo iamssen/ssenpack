@@ -1,7 +1,6 @@
 const Webpack = require('./base/webpack');
 const path = require('path');
 const merge = require('webpack-merge');
-const webpack = require('webpack');
 const rimraf = require('rimraf');
 
 class Builder extends Webpack {
@@ -10,7 +9,7 @@ class Builder extends Webpack {
   }
   
   get webpackConfig() {
-    return merge(this.baseConfig, {
+    return merge(this.getConfig({mode: 'development', extractCSS: true}), {
       devtool: 'source-map',
       cache: true,
       
@@ -19,20 +18,6 @@ class Builder extends Webpack {
       },
       
       entry: this.options.web.entry,
-      
-      plugins: [
-        ...Object.values(this.extractCSS),
-        //...Object.keys(web.dll).map(name => {
-        //  return new webpack.DllReferencePlugin({
-        //    context: '.',
-        //    manifest: require(`./dist-dev/dll/monitoring/assets/${name}-manifest.json`),
-        //  });
-        //}),
-        new webpack.optimize.CommonsChunkPlugin({
-          name: this.options.web.sharedChunkName || 'shared',
-          chunks: Object.keys(this.options.web.entry),
-        }),
-      ],
     });
   }
   

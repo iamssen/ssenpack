@@ -12,7 +12,7 @@ class Builder extends Webpack {
   }
   
   get webpackConfig() {
-    return merge(this.baseConfig, {
+    return merge(this.getConfig({mode: 'production', extractCSS: true}), {
       target: 'node',
       devtool: 'source-map',
       
@@ -26,11 +26,6 @@ class Builder extends Webpack {
       },
       
       externals: [nodeExternals()],
-      
-      plugins: [
-        new webpack.optimize.ModuleConcatenationPlugin(),
-        ...Object.values(this.extractCSS),
-      ],
     });
   }
   

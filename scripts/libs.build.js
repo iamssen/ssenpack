@@ -4,10 +4,10 @@ const glob = require('glob');
 const ts = require('typescript');
 const rimraf = require('rimraf');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const nodeExternals = require('webpack-node-externals');
 const webpack = require('webpack');
 const finalizeWebpackConfig = require('./base/finalizeWebpackConfig');
+const CSSExtractPlugin = require('mini-css-extract-plugin');
 
 const buildDeclration = ({options, name, groupDir, file}) => new Promise((resolve, reject) => {
   const program = ts.createProgram([file], {
@@ -59,29 +59,13 @@ const build = ({options, name, groupDir, file, libExternals}) => new Promise((re
     return file.indexOf(path.resolve(options.CWD, path.join(options.CWD, 'src', '_library', groupDir + name))) === 0;
   };
   
-  const extractCSS = {
-    default: new ExtractTextPlugin({
-      filename: path.join('dist', 'libs', groupDir + name, 'index.css'),
-      allChunks: true,
-    }),
-  };
-  
-  if (options.style && options.style.themes) {
-    Object.keys(options.style.themes).forEach(themeName => {
-      extractCSS[themeName] = new ExtractTextPlugin({
-        filename: path.join('dist', 'libs', groupDir + name, `index.${themeName}.css`),
-        allChunks: true,
-      });
-    });
-  }
-  
   const plugins = [
-    new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
     }),
-    new webpack.optimize.ModuleConcatenationPlugin(),
-    ...Object.values(extractCSS),
+    new CSSExtractPlugin({
+      filename: path.join('dist', 'libs', groupDir + name, 'index.css'),
+    }),
   ];
   
   const copyFileFrom = path.join(options.CWD, 'src', '_library', groupDir + name);
@@ -101,136 +85,9 @@ const build = ({options, name, groupDir, file, libExternals}) => new Promise((re
     plugins.push(new CopyWebpackPlugin(copyFiles));
   }
   
-  const cssOptions = (importLoaders) => ({
-    sourceMap: true,
-    url: false,
-    importLoaders,
-  });
-  
-  const cssModuleOptions = (importLoaders) => ({
-    sourceMap: true,
-    url: false,
-    modules: true,
-    localIdentName: '[name]__[local]___[hash:base64:5]',
-    importLoaders,
-  });
-  
-  const cssRules = [
-    {
-      test: file => {
-        return /\.css$/.test(file)
-          && (
-            !options.style
-            || !options.style.themes
-            || Object.keys(options.style.themes).every(name => !new RegExp(`\.${name}\.css$`).test(file))
-          );
-      },
-      include,
-      use: extractCSS.default.extract({
-        fallback: 'style-loader',
-        use: [
-          {
-            loader: 'css-loader',
-            options: cssOptions(1),
-          },
-          {
-            loader: 'postcss-loader',
-            options: {
-              config: {
-                path: path.join(__dirname, 'base', 'postcss.config.js'),
-              },
-            },
-          },
-        ],
-      }),
-    },
-    {
-      test: file => {
-        return /\.scss$/.test(file)
-          && (
-            !options.style
-            || !options.style.themes
-            || Object.keys(options.style.themes).every(name => !new RegExp(`\.${name}\.scss$`).test(file))
-          );
-      },
-      include,
-      use: extractCSS.default.extract({
-        fallback: 'style-loader',
-        use: [
-          {
-            loader: 'css-loader',
-            options: cssOptions(2),
-          },
-          {
-            loader: 'postcss-loader',
-            options: {
-              config: {
-                path: path.join(__dirname, 'base', 'postcss.config.js'),
-              },
-            },
-          },
-          {
-            loader: 'sass-loader',
-          },
-        ],
-      }),
-    },
-  ];
-  
-  if (options.style && options.style.themes) {
-    Object.keys(options.style.themes).forEach(name => {
-      const theme = options.style.themes[name];
-      cssRules.push(
-        {
-          test: new RegExp(`\.${name}\.css$`),
-          include,
-          use: extractCSS[name].extract({
-            fallback: 'style-loader',
-            use: [
-              {
-                loader: 'css-loader',
-                options: theme.cssModule === true ? cssModuleOptions(1) : cssOptions(1),
-              },
-              {
-                loader: 'postcss-loader',
-                options: {
-                  config: {
-                    path: path.join(__dirname, 'base', 'postcss.config.js'),
-                  },
-                },
-              },
-            ],
-          }),
-        },
-        {
-          test: new RegExp(`\.${name}\.scss$`),
-          include,
-          use: extractCSS[name].extract({
-            fallback: 'style-loader',
-            use: [
-              {
-                loader: 'css-loader',
-                options: theme.cssModule === true ? cssModuleOptions(2) : cssOptions(2),
-              },
-              {
-                loader: 'postcss-loader',
-                options: {
-                  config: {
-                    path: path.join(__dirname, 'base', 'postcss.config.js'),
-                  },
-                },
-              },
-              {
-                loader: 'sass-loader',
-              },
-            ],
-          }),
-        },
-      );
-    });
-  }
-  
   const webpackConfig = {
+    mode: 'production',
+    
     devtool: 'source-map',
     
     entry: () => file,
@@ -251,6 +108,25 @@ const build = ({options, name, groupDir, file, libExternals}) => new Promise((re
       modules: ['node_modules', path.join(options.MODULE_HOME, 'node_modules')],
     },
     
+    optimization: {
+      concatenateModules: true,
+      splitChunks: {
+        cacheGroups: {
+          ...(options.style && Array.isArray(options.style.themes)
+            ? options.style.themes.reduce((cacheGroup, theme) => {
+              cacheGroup[theme] = {
+                name: theme,
+                test: m => m.constructor.name === 'CssModule' && new RegExp(`\.${theme}\.s?css`).test(m.identifier()),
+                chunks: 'all',
+                enforce: true,
+              };
+              return cacheGroup;
+            }, {})
+            : {}),
+        },
+      },
+    },
+    
     module: {
       rules: [
         {
@@ -260,7 +136,104 @@ const build = ({options, name, groupDir, file, libExternals}) => new Promise((re
             {loader: 'awesome-typescript-loader'},
           ],
         },
-        ...cssRules,
+        {
+          test: /\.module\.css$/,
+          include,
+          use: [
+            CSSExtractPlugin.loader,
+            {
+              loader: 'css-loader',
+              options: {
+                sourceMap: true,
+                url: false,
+                modules: true,
+                localIdentName: '[name]__[local]___[hash:base64:5]',
+                importLoaders: 1,
+              },
+            },
+            {
+              loader: 'postcss-loader',
+              options: {
+                config: {
+                  path: path.join(__dirname, 'base', 'postcss.config.js'),
+                },
+              },
+            },
+          ],
+        },
+        {
+          test: /\.module\.scss$/,
+          include,
+          use: [
+            CSSExtractPlugin.loader,
+            {
+              loader: 'css-loader',
+              options: {
+                sourceMap: true,
+                url: false,
+                modules: true,
+                localIdentName: '[name]__[local]___[hash:base64:5]',
+                importLoaders: 2,
+              },
+            },
+            {
+              loader: 'postcss-loader',
+              options: {
+                config: {
+                  path: path.join(__dirname, 'base', 'postcss.config.js'),
+                },
+              },
+            },
+            'sass-loader',
+          ],
+        },
+        {
+          test: file => /\.css$/.test(file) && !/\.module\.css$/.test(file),
+          include,
+          use: [
+            CSSExtractPlugin.loader,
+            {
+              loader: 'css-loader',
+              options: {
+                sourceMap: true,
+                url: false,
+                importLoaders: 1,
+              },
+            },
+            {
+              loader: 'postcss-loader',
+              options: {
+                config: {
+                  path: path.join(__dirname, 'base', 'postcss.config.js'),
+                },
+              },
+            },
+          ],
+        },
+        {
+          test: file => /\.scss$/.test(file) && !/\.module\.scss$/.test(file),
+          include,
+          use: [
+            CSSExtractPlugin.loader,
+            {
+              loader: 'css-loader',
+              options: {
+                sourceMap: true,
+                url: false,
+                importLoaders: 2,
+              },
+            },
+            {
+              loader: 'postcss-loader',
+              options: {
+                config: {
+                  path: path.join(__dirname, 'base', 'postcss.config.js'),
+                },
+              },
+            },
+            'sass-loader',
+          ],
+        },
       ],
     },
     
@@ -323,7 +296,7 @@ module.exports = (options) => () => {
           if (err) {
             console.error(err);
           } else {
-            console.log('😃 Build all libraries are successful.',);
+            console.log('😃 Build all libraries are successful.');
           }
         });
       }

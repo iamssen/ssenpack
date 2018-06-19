@@ -10,7 +10,7 @@ class Builder extends Webpack {
   }
   
   get webpackConfig() {
-    return merge(this.baseConfig, {
+    return merge(this.getConfig({mode: 'development', extractCSS: true}), {
       target: 'node',
       devtool: 'source-map',
       
@@ -22,10 +22,6 @@ class Builder extends Webpack {
         path: path.join(this.options.CWD, 'dist-dev', 'server'),
         libraryTarget: 'commonjs',
       },
-      
-      plugins: [
-        ...Object.values(this.extractCSS),
-      ],
       
       externals: [nodeExternals()],
     });

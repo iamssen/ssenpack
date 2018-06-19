@@ -1,3 +1,4 @@
+// @formatter:off
 module.exports = (options) => {
   options = {
     ...options,
@@ -18,9 +19,6 @@ module.exports = (options) => {
           build: require('./scripts/web.server.dev.build')({...options, command: 'web.server.dev.build'}),
           start: require('./scripts/web.server.dev.start')({...options, command: 'web.server.dev.start'}),
         },
-      },
-      dll: {
-        build: require('./scripts/web.dll.build')({...options, command: 'web.dll.build'}),
       },
     },
     electron: {

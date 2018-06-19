@@ -8,7 +8,6 @@ const path = require('path');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const getModulePath = require('./base/getModulePath');
-const parseDllName = require('./base/parseDllName');
 const finalizeWebpackConfig = require('./base/finalizeWebpackConfig');
 
 class Builder extends Webpack {
@@ -17,9 +16,7 @@ class Builder extends Webpack {
   }
   
   get webpackConfig() {
-    const dllInfo = parseDllName(this.options.web.dll.name);
-    
-    return merge(this.baseConfig, {
+    return merge(this.getConfig({mode: 'development', extractCSS: false}), {
       // devtool: 'cheap-module-source-map', // slow + update source map with hmr
       devtool: 'cheap-module-eval-source-map', // fast + no update source map with hmr
       cache: true,
@@ -41,25 +38,13 @@ class Builder extends Webpack {
       }, {}),
       
       plugins: [
-        ...Object.values(this.extractCSS),
-        new webpack.DllReferencePlugin({
-          context: '.',
-          manifest: require(path.join(this.options.CWD, 'dist-dev', 'dll', ...dllInfo.dirs, `${dllInfo.name}-manifest.json`)),
-        }),
-        //...Object.keys(this.options.web.dll).map(name => {
-        //  return new webpack.DllReferencePlugin({
-        //    context: '.',
-        //    manifest: require(path.join(this.options.CWD, 'dist-dev', 'dll', `${name}-manifest.json`)),
-        //  });
-        //}),
-        new webpack.optimize.CommonsChunkPlugin({
-          name: this.options.web.sharedChunkName || 'shared',
-          chunks: Object.keys(this.options.web.entry),
-        }),
         new webpack.HotModuleReplacementPlugin(),
-        new webpack.NamedModulesPlugin(),
-        new webpack.NoEmitOnErrorsPlugin(),
       ],
+      
+      optimization: {
+        namedModules: true,
+        noEmitOnErrors: true,
+      },
     });
   }
   
@@ -95,7 +80,6 @@ class Builder extends Webpack {
       
       server: {
         baseDir: [
-          path.join(this.options.CWD, 'dist-dev', 'dll'),
           ...this.options.web.static.map(dir => path.resolve(this.options.CWD, dir)),
         ],
         
@@ -103,7 +87,6 @@ class Builder extends Webpack {
       },
       
       files: [
-        path.join(this.options.CWD, 'dist-dev', 'dll'),
         ...this.options.web.static.map(dir => path.resolve(this.options.CWD, dir)),
       ],
     };

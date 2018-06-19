@@ -11,7 +11,7 @@ class Builder extends Webpack {
   }
   
   get webpackConfig() {
-    return merge(this.baseConfig, {
+    return merge(this.getConfig({mode: 'development', extractCSS: true}), {
       target: 'node',
       devtool: 'source-map',
       
@@ -23,7 +23,6 @@ class Builder extends Webpack {
       },
       
       plugins: [
-        ...Object.values(this.extractCSS),
         new CopyWebpackPlugin([
           ...this.options.web.static.map(dir => ({from: dir})),
         ]),

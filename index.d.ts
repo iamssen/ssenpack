@@ -3,11 +3,7 @@ import { MiddlewareHandler, PerRouteMiddleware } from 'browser-sync';
 declare module 'ssenpack' {
   export interface Options {
     style?: {
-      themes?: {
-        [name: string]: {
-          cssModule?: boolean;
-        }
-      };
+      themes?: string[];
     }
     
     web: {
@@ -59,10 +55,6 @@ declare module 'ssenpack' {
         };
         start(): void;
       }
-    }
-    
-    dll: {
-      build(): void;
     }
   }
   

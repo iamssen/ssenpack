@@ -34,9 +34,6 @@ switch (process.argv[2]) {
   case 'web.dev.start':
     ssenpack.web.dev.start();
     break;
-  case 'web.dll.build':
-    ssenpack.web.dll.build();
-    break;
   case 'web.server.build':
     ssenpack.web.server.build();
     break;
