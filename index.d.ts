@@ -8,14 +8,10 @@ declare module 'ssenpack' {
     
     web: {
       entry: {[name: string]: string | string[]};
-      dll: {
-        name: string;
-        entry: string[];
-      };
       externals: {[name: string]: string};
       static: string[];
       publicPath?: string;
-      sharedChunkName?: string;
+      vendorChunkName?: string;
       chunkFileDirectory?: string;
       port: number;
       https?: boolean | {key: string, cert: string};

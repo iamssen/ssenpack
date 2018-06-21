@@ -115,8 +115,11 @@ const build = ({options, name, groupDir, file, libExternals}) => new Promise((re
           ...(options.style && Array.isArray(options.style.themes)
             ? options.style.themes.reduce((cacheGroup, theme) => {
               cacheGroup[theme] = {
-                name: theme,
-                test: m => m.constructor.name === 'CssModule' && new RegExp(`\.${theme}\.s?css`).test(m.identifier()),
+                name: 'theme.' + theme,
+                test: m => {
+                  return m.constructor.name === 'CssModule'
+                    && new RegExp(`\.${theme}\.s?css`).test(m.identifier());
+                },
                 chunks: 'all',
                 enforce: true,
               };

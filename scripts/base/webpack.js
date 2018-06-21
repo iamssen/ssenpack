@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
-const CSSExtractPlugin = require('mini-css-extract-plugin');
+const CSSExtractPlugin = require('extract-css-chunks-webpack-plugin');
 const {CheckerPlugin} = require('awesome-typescript-loader');
 const finalizeWebpackConfig = require('./finalizeWebpackConfig');
 
@@ -62,7 +62,7 @@ module.exports = class {
     return alias;
   };
   
-  getConfig({mode = 'development', extractCSS = true}) {
+  getConfig({mode = 'development'}) {
     /** @type string */
     const src = path.join(this.options.CWD, 'src');
     
@@ -79,16 +79,23 @@ module.exports = class {
       optimization: {
         splitChunks: {
           cacheGroups: {
-            shared: {
+            // vendor chunk
+            vendor: {
               test: /[\\/]node_modules[\\/]/,
-              name: 'shared',
+              name: typeof this.options.web.vendorChunkName === 'string'
+                ? this.options.web.vendorChunkName
+                : 'vendor',
               chunks: 'all',
             },
+            // theme css chunks
             ...(this.options.style && Array.isArray(this.options.style.themes)
               ? this.options.style.themes.reduce((cacheGroup, theme) => {
                 cacheGroup[theme] = {
-                  name: theme,
-                  test: m => m.constructor.name === 'CssModule' && new RegExp(`\.${theme}\.s?css`).test(m.identifier()),
+                  name: 'theme.' + theme,
+                  test: m => {
+                    return m.constructor.name === 'CssModule'
+                      && new RegExp(`\.${theme}\.s?css`).test(m.identifier());
+                  },
                   chunks: 'all',
                   enforce: true,
                 };
@@ -142,11 +149,11 @@ module.exports = class {
             test: /\.module\.css$/,
             include: src,
             use: [
-              extractCSS ? CSSExtractPlugin.loader : 'style-loader',
+              CSSExtractPlugin.loader,
               {
                 loader: 'css-loader',
                 options: {
-                  sourceMap: extractCSS,
+                  sourceMap: true,
                   url: false,
                   modules: true,
                   localIdentName: '[name]__[local]___[hash:base64:5]',
@@ -167,11 +174,11 @@ module.exports = class {
             test: /\.module\.scss$/,
             include: src,
             use: [
-              extractCSS ? CSSExtractPlugin.loader : 'style-loader',
+              CSSExtractPlugin.loader,
               {
                 loader: 'css-loader',
                 options: {
-                  sourceMap: extractCSS,
+                  sourceMap: true,
                   url: false,
                   modules: true,
                   localIdentName: '[name]__[local]___[hash:base64:5]',
@@ -193,11 +200,11 @@ module.exports = class {
             test: file => /\.css$/.test(file) && !/\.module\.css$/.test(file),
             include: src,
             use: [
-              extractCSS ? CSSExtractPlugin.loader : 'style-loader',
+              CSSExtractPlugin.loader,
               {
                 loader: 'css-loader',
                 options: {
-                  sourceMap: extractCSS,
+                  sourceMap: true,
                   url: false,
                   importLoaders: 1,
                 },
@@ -216,11 +223,11 @@ module.exports = class {
             test: file => /\.scss$/.test(file) && !/\.module\.scss$/.test(file),
             include: src,
             use: [
-              extractCSS ? CSSExtractPlugin.loader : 'style-loader',
+              CSSExtractPlugin.loader,
               {
                 loader: 'css-loader',
                 options: {
-                  sourceMap: extractCSS,
+                  sourceMap: true,
                   url: false,
                   importLoaders: 2,
                 },
