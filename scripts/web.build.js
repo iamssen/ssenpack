@@ -12,7 +12,7 @@ class Builder extends Webpack {
   }
   
   get webpackConfig() {
-    return merge(this.getConfig({mode: 'production'}), {
+    return merge(this.getConfig({mode: 'production', extractCSS: true}), {
       output: {
         path: path.join(this.options.CWD, 'dist', 'web'),
       },

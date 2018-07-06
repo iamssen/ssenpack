@@ -62,7 +62,7 @@ module.exports = class {
     return alias;
   };
   
-  getConfig({mode = 'development'}) {
+  getConfig({mode = 'development', extractCSS = true}) {
     /** @type string */
     const src = path.join(this.options.CWD, 'src');
     
@@ -173,11 +173,11 @@ module.exports = class {
             test: /\.module\.css$/,
             include: src,
             use: [
-              CSSExtractPlugin.loader,
+              extractCSS ? CSSExtractPlugin.loader : 'style-loader',
               {
                 loader: 'css-loader',
                 options: {
-                  sourceMap: true,
+                  sourceMap: extractCSS,
                   url: false,
                   modules: true,
                   localIdentName: '[name]__[local]___[hash:base64:5]',
@@ -198,11 +198,11 @@ module.exports = class {
             test: /\.module\.scss$/,
             include: src,
             use: [
-              CSSExtractPlugin.loader,
+              extractCSS ? CSSExtractPlugin.loader : 'style-loader',
               {
                 loader: 'css-loader',
                 options: {
-                  sourceMap: true,
+                  sourceMap: extractCSS,
                   url: false,
                   modules: true,
                   localIdentName: '[name]__[local]___[hash:base64:5]',
@@ -224,11 +224,11 @@ module.exports = class {
             test: file => /\.css$/.test(file) && !/\.module\.css$/.test(file),
             include: src,
             use: [
-              CSSExtractPlugin.loader,
+              extractCSS ? CSSExtractPlugin.loader : 'style-loader',
               {
                 loader: 'css-loader',
                 options: {
-                  sourceMap: true,
+                  sourceMap: extractCSS,
                   url: false,
                   importLoaders: 1,
                 },
@@ -247,11 +247,11 @@ module.exports = class {
             test: file => /\.scss$/.test(file) && !/\.module\.scss$/.test(file),
             include: src,
             use: [
-              CSSExtractPlugin.loader,
+              extractCSS ? CSSExtractPlugin.loader : 'style-loader',
               {
                 loader: 'css-loader',
                 options: {
-                  sourceMap: true,
+                  sourceMap: extractCSS,
                   url: false,
                   importLoaders: 2,
                 },

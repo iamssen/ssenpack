@@ -16,7 +16,7 @@ class Builder extends Webpack {
   }
   
   get webpackConfig() {
-    return merge(this.getConfig({mode: 'development'}), {
+    return merge(this.getConfig({mode: 'development', extractCSS: false}), {
       // devtool: 'cheap-module-source-map', // slow + update source map with hmr
       devtool: 'cheap-module-eval-source-map', // fast + no update source map with hmr
       cache: true,
