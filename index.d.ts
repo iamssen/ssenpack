@@ -3,6 +3,8 @@ import { MiddlewareHandler, PerRouteMiddleware } from 'browser-sync';
 declare module 'ssenpack' {
   export interface Options {
     style?: {
+      styleFileName?: string;
+      themeFilePrefixName?: string;
       themes?: string[];
     }
     

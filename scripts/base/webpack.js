@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
-const CSSExtractPlugin = require('extract-css-chunks-webpack-plugin');
+const CSSExtractPlugin = require('mini-css-extract-plugin');
 const {CheckerPlugin} = require('awesome-typescript-loader');
 const finalizeWebpackConfig = require('./finalizeWebpackConfig');
 
@@ -72,6 +72,18 @@ module.exports = class {
         : this.options.web.chunkFileDirectory + '/'
       : '';
     
+    const vendorChunkName = typeof this.options.web.vendorChunkName === 'string'
+      ? this.options.web.vendorChunkName
+      : 'vendor';
+    
+    const styleFileName = this.options.style && typeof this.options.style.styleFileName === 'string'
+      ? this.options.style.styleFileName
+      : 'style';
+    
+    const themeFilePrefixName = this.options.style && this.options.style.themeFilePrefixName
+      ? this.options.style.themeFilePrefixName
+      : 'theme.';
+    
     return {
       mode,
       target: 'web',
@@ -82,16 +94,28 @@ module.exports = class {
             // vendor chunk
             vendor: {
               test: /[\\/]node_modules[\\/]/,
-              name: typeof this.options.web.vendorChunkName === 'string'
-                ? this.options.web.vendorChunkName
-                : 'vendor',
+              name: vendorChunkName,
               chunks: 'all',
+            },
+            // extract single css file
+            style: {
+              name: styleFileName,
+              test: m => {
+                return m.constructor.name === 'CssModule'
+                  && (
+                    !this.options.style
+                    || !Array.isArray(this.options.style.themes)
+                    || !this.options.style.themes.some(theme => new RegExp(`\.${theme}\.s?css`).test(m.identifier()))
+                  );
+              },
+              chunks: 'all',
+              enforce: true,
             },
             // theme css chunks
             ...(this.options.style && Array.isArray(this.options.style.themes)
               ? this.options.style.themes.reduce((cacheGroup, theme) => {
                 cacheGroup[theme] = {
-                  name: 'theme.' + theme,
+                  name: themeFilePrefixName + theme,
                   test: m => {
                     return m.constructor.name === 'CssModule'
                       && new RegExp(`\.${theme}\.s?css`).test(m.identifier());
