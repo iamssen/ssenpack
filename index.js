@@ -32,6 +32,7 @@ module.exports = (options) => {
     },
     messages: {
       build: require('./scripts/messages.build')({...options, command: 'messages.build'}),
+      releaseTranslate: require('./scripts/messages.release-translate')({...options, command: 'messages.release-translate'}),
     },
     editor: {
       alias: require('./scripts/editor.alias')({...options, command: 'editor.alias'}),

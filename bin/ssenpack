@@ -22,6 +22,9 @@ switch (process.argv[2]) {
   case 'messages.build':
     ssenpack.messages.build();
     break;
+  case 'messages.release-translate':
+    ssenpack.messages.releaseTranslate();
+    break;
   case 'web.build':
     ssenpack.web.build();
     break;
