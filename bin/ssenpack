@@ -49,6 +49,9 @@ switch (process.argv[2]) {
   case 'web.server.dev.start':
     ssenpack.web.server.dev.start();
     break;
+  case 'tsc.build':
+    ssenpack.tsc.build();
+    break;
   default:
     console.error('Unknown command', process.argv[2]);
     break;

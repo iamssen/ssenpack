@@ -8,7 +8,7 @@ declare module 'ssenpack' {
       themes?: string[];
     }
     
-    web: {
+    web?: {
       entry: {[name: string]: string | string[]};
       externals: {[name: string]: string};
       static: string[];
@@ -27,6 +27,14 @@ declare module 'ssenpack' {
     
     libs?: {
       entry: {[name: string]: {group?: string}}
+    }
+
+    tsc?: {
+      entry: {
+        file: string;
+        outFile: string;
+        includeNodeExternals?: boolean;
+      }[];
     }
     
     webpackConfig?: (command: string, config: object) => object;
@@ -78,6 +86,10 @@ declare module 'ssenpack' {
   export interface Editor {
     alias(): object;
   }
+
+  export interface TSC {
+    build(): void;
+  }
   
   const createSSenpack: (options: Options) => {
     web: Web;
@@ -85,6 +97,7 @@ declare module 'ssenpack' {
     libs: Libs;
     messages: Messages;
     editor: Editor;
+    tsc: TSC;
   };
   
   export = createSSenpack;

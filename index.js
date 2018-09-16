@@ -37,6 +37,9 @@ module.exports = (options) => {
     editor: {
       alias: require('./scripts/editor.alias')({...options, command: 'editor.alias'}),
     },
+    tsc: {
+      build: require('./scripts/tsc.build')({...options, command: 'tsc.build'}),
+    },
   };
   
   instances.web.dev.build.watch = require('./scripts/web.dev.build.watch')({...options, command: 'web.dev.build.watch'});
