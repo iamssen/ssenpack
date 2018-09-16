@@ -7,7 +7,7 @@ const nodeExternals = require('webpack-node-externals');
 const webpack = require('webpack');
 const finalizeWebpackConfig = require('./base/finalizeWebpackConfig');
 
-const build = ({options, file, outFile, includeNodeExternals}) => new Promise((resolve, reject) => {
+const build = ({options, file, outFile, libraryTarget, includeNodeExternals}) => new Promise((resolve, reject) => {
   const include = file => {
     return file.indexOf(path.resolve(options.CWD, path.join(options.CWD, 'src'))) === 0;
   };
@@ -21,6 +21,15 @@ const build = ({options, file, outFile, includeNodeExternals}) => new Promise((r
   const externals = includeNodeExternals
     ? []
     : [nodeExternals()];
+
+  const output = {
+    path: options.CWD,
+    filename: outFile,
+  };
+
+  if (libraryTarget) {
+    output.libraryTarget = libraryTarget;
+  }
   
   const webpackConfig = {
     mode: 'production',
@@ -31,11 +40,7 @@ const build = ({options, file, outFile, includeNodeExternals}) => new Promise((r
     
     externals,
     
-    output: {
-      path: options.CWD,
-      filename: outFile,
-      libraryTarget: 'commonjs',
-    },
+    output,
     
     resolve: {
       extensions: ['.ts', '.js', '.tsx'],

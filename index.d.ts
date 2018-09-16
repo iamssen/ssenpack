@@ -34,6 +34,7 @@ declare module 'ssenpack' {
         file: string;
         outFile: string;
         includeNodeExternals?: boolean;
+        libraryTarget?: string;
       }[];
     }
     
