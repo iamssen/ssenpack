@@ -30,13 +30,13 @@ declare module 'ssenpack' {
     }
 
     tsc?: {
-      entry: {
+      entry: {[name: string]: {
         file: string;
         outFile: string;
         includeNodeExternals?: boolean;
         libraryTarget?: string;
-      }[];
-    }
+      };
+    }}
     
     webpackConfig?: (command: string, config: object) => object;
   }
@@ -90,6 +90,13 @@ declare module 'ssenpack' {
 
   export interface TSC {
     build(): void;
+
+    dev: {
+      build: {
+        (target: string): void;
+        watch(target: string): void;
+      }
+    }
   }
   
   const createSSenpack: (options: Options) => {

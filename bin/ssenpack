@@ -52,6 +52,12 @@ switch (process.argv[2]) {
   case 'tsc.build':
     ssenpack.tsc.build();
     break;
+  case 'tsc.dev.build':
+    ssenpack.tsc.dev.build(process.argv[3]);
+    break;
+  case 'tsc.dev.build.watch':
+    ssenpack.tsc.dev.build.watch(process.argv[3]);
+    break;
   default:
     console.error('Unknown command', process.argv[2]);
     break;

@@ -7,11 +7,11 @@ const nodeExternals = require('webpack-node-externals');
 const webpack = require('webpack');
 const finalizeWebpackConfig = require('./base/finalizeWebpackConfig');
 
-const build = ({options, file, outFile, libraryTarget, includeNodeExternals}) => new Promise((resolve, reject) => {
+const createWebpack = ({ options, file, outFile, libraryTarget, includeNodeExternals, mode }) => {
   const include = file => {
     return file.indexOf(path.resolve(options.CWD, path.join(options.CWD, 'src'))) === 0;
   };
-  
+
   const plugins = [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
@@ -30,46 +30,54 @@ const build = ({options, file, outFile, libraryTarget, includeNodeExternals}) =>
   if (libraryTarget) {
     output.libraryTarget = libraryTarget;
   }
-  
+
+  const optimization = mode === 'production'
+    ? {
+      concatenateModules: true,
+    }
+    : {};
+
   const webpackConfig = {
-    mode: 'production',
-    
+    mode,
+
     devtool: 'source-map',
-    
+
     entry: () => path.join(options.CWD, file),
-    
+
     externals,
-    
+
     output,
-    
+
     resolve: {
       extensions: ['.ts', '.js', '.tsx'],
     },
-    
+
     resolveLoader: {
       modules: ['node_modules', path.join(options.MODULE_HOME, 'node_modules')],
     },
-    
-    optimization: {
-      concatenateModules: true,
-    },
-    
+
+    optimization,
+
     module: {
       rules: [
         {
           test: /\.(ts|tsx)$/,
           include,
           use: [
-            {loader: 'awesome-typescript-loader'},
+            { loader: 'awesome-typescript-loader' },
           ],
         },
       ],
     },
-    
+
     plugins,
   };
-  
-  return webpack(finalizeWebpackConfig(options, webpackConfig)).run((err, stats) => {
+
+  return webpack(finalizeWebpackConfig(options, webpackConfig));
+};
+
+const build = webpack => new Promise((resolve, reject) => {
+  webpack.run((err, stats) => {
     if (err) {
       console.error(err);
       reject(err);
@@ -80,23 +88,27 @@ const build = ({options, file, outFile, libraryTarget, includeNodeExternals}) =>
       }));
       resolve();
     }
-  });
+  })
 });
 
 module.exports = (options) => () => {
+  const keys = Object.keys(options.tsc.entry);
+
   let f = -1;
-  const fmax = options.tsc.entry.length;
+  const fmax = keys.length;
 
   const run = () => {
     if (++f < fmax) {
-      const buildOption = options.tsc.entry[f];
-      build({options, ...buildOption})
+      const buildOption = options.tsc.entry[keys[f]];
+      build(createWebpack({ options, ...buildOption, mode: 'production' }))
         .then(() => run())
-        .catch(err => console.error('😫 build tsc files are failed.', err));
+        .catch(err => console.error('😫 tsc build is failed.', err));
     } else {
-      console.log('😃 Build all tsc files are successful.');
+      console.log('😃 tsc build is successful.');
     }
   }
 
   run();
 }
+
+module.exports.createWebpack = createWebpack;

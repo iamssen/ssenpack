@@ -39,12 +39,16 @@ module.exports = (options) => {
     },
     tsc: {
       build: require('./scripts/tsc.build')({...options, command: 'tsc.build'}),
+      dev: {
+        build: require('./scripts/tsc.dev.build')({...options, command: 'tsc.dev.build'}),
+      }
     },
   };
   
   instances.web.dev.build.watch = require('./scripts/web.dev.build.watch')({...options, command: 'web.dev.build.watch'});
   instances.web.server.dev.build.watch = require('./scripts/web.server.dev.build.watch')({...options, command: 'web.server.dev.build.watch'});
   instances.electron.dev.build.watch = require('./scripts/electron.dev.build.watch')({...options, command: 'electron.dev.build.watch'});
+  instances.tsc.dev.build.watch = require('./scripts/tsc.dev.build.watch')({...options, command: 'tsc.dev.build.watch'});
   
   return instances;
 };
